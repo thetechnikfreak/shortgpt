@@ -66,9 +66,15 @@ def open_file(filepath):
         return infile.read()
 
 
+<<<<<<< HEAD
+def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the answer to anything", temp=0.7, model="gpt-3.5-turbo",max_tokens=1000, remove_nl=True, conversation=None):
+    openai.api_key = get_api_key("OPENAI")
+    openai.api_base = 'https://fresedgpt.space/v1/'
+=======
+
 def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the answer to anything", temp=0.7, model="gpt-3.5-turbo", max_tokens=1000, remove_nl=True, conversation=None):
     openai.api_key = ApiKeyManager.get_api_key("OPENAI")
-    openai.api_base = 'https://api.pawan.krd/v1'
+>>>>>>> 391cb6360429ecdf62f1f9851171368d4daeef29
     max_retry = 5
     retry = 0
     while True:
@@ -79,13 +85,13 @@ def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the
                 messages = [
                     {"role": "system", "content": system},
                     {"role": "user", "content": chat_prompt}
-                ]  
-            safeInput = system + "\n" + chat_prompt
-            print("------------\n")
-            print(safeInput)
-            print("-------------\n")
-            text = input("Enter the above text in chatgpt and enter the answer:")    
-            #--------------------
+                ]
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temp)
+            text = response['choices'][0]['message']['content'].strip()
             if remove_nl:
                 text = re.sub('\s+', ' ', text)
             filename = '%s_gpt3.txt' % time()
