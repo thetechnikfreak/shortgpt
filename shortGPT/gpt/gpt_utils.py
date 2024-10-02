@@ -57,10 +57,8 @@ def load_json_file(file_path):
 
 from pathlib import Path
 
-def load_local_yaml_prompt(file_path):
-    _here = Path(__file__).parent
-    _absolute_path = (_here / '..' / file_path).resolve()
-    json_template = load_yaml_file(str(_absolute_path))
+def load_yaml_prompt(file_path):
+    json_template = load_yaml_file(file_path)
     return json_template['chat_prompt'], json_template['system_prompt']
 
 
