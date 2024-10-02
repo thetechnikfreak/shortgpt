@@ -3,7 +3,8 @@ import os
 import re
 from time import sleep, time
 
-import openai
+from openai import OpenAI
+
 import tiktoken
 import yaml
 
