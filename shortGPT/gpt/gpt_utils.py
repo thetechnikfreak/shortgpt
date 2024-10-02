@@ -65,16 +65,9 @@ def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
         return infile.read()
 
-
-<<<<<<< HEAD
-def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the answer to anything", temp=0.7, model="gpt-3.5-turbo",max_tokens=1000, remove_nl=True, conversation=None):
-    openai.api_key = get_api_key("OPENAI")
-    openai.api_base = 'https://fresedgpt.space/v1/'
-=======
-
 def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the answer to anything", temp=0.7, model="gpt-3.5-turbo", max_tokens=1000, remove_nl=True, conversation=None):
     openai.api_key = ApiKeyManager.get_api_key("OPENAI")
->>>>>>> 391cb6360429ecdf62f1f9851171368d4daeef29
+    openai.api_base = 'https://fresedgpt.space/v1/'
     max_retry = 5
     retry = 0
     while True:
@@ -85,13 +78,42 @@ def gpt3Turbo_completion(chat_prompt="", system="You are an AI that can give the
                 messages = [
                     {"role": "system", "content": system},
                     {"role": "user", "content": chat_prompt}
-                ]
-            response = openai.ChatCompletion.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temp)
-            text = response['choices'][0]['message']['content'].strip()
+                ]  
+            safeInput = system + "\n" + chat_prompt
+            print("------------\n")
+            print(safeInput)
+            print("-------------\n")
+            data = {
+                "prompt": safeInput
+            }
+            payload = json.dumps(data)
+
+            # Set the headers
+            headers = {
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/110.0",
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Content-Type": "application/json",
+                "Origin": "https://chatbot.theb.ai",
+                "Referer": "https://chatbot.theb.ai/"
+            }
+            url = "https://chatbot.theb.ai/api/chat-process"
+            response = requests.post(url, data=payload, headers=headers)
+            if response.status_code == 200:
+                response_text = response.text
+
+                # Find the last JSON string in the response text
+                json_strings = response_text.strip().split('\n')
+                last_json_string = json_strings[-1]
+
+                response_json = json.loads(last_json_string)
+                text = response_json['text']
+            else:
+                print("Error:", response.status_code)
+
+            print(text)
+            print("--------------\n")    
+            #--------------------
             if remove_nl:
                 text = re.sub('\s+', ' ', text)
             filename = '%s_gpt3.txt' % time()
